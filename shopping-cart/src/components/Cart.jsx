@@ -1,35 +1,34 @@
 import React, { useState } from "react";
-import { deleteItem, updateItem } from "../features/cart/cartSlice";
+import {
+  deleteItem,
+  increaseCount,
+  decreaseCount,
+  updateItem,
+} from "../features/cart/cartSlice";
 import { useDispatch, useSelector } from "react-redux";
 
 function Cart() {
   // Fetching items from store
   let items = useSelector((state) => state.items);
   items = items.filter((item) => Object.keys(item).length !== 0);
-  
-  const dispatch = useDispatch();
-  
-  const [newName, setNewName] = useState("")
-  const [isEditable, setIsEditable] = useState(false)
-  const [editableItemId, setEditableItemId] = useState(null);
 
-  const update = (id) => {
-    dispatch(updateItem({id: id, name: newName}))
-    setNewName("")
-    setIsEditable(false)
-  }
+  const dispatch = useDispatch();
+
+  const [newName, setNewName] = useState("");
+  const [isEditable, setIsEditable] = useState(false);
+  const [editableItemId, setEditableItemId] = useState(null);
 
   const handleUpdate = (id, name) => {
     if (isEditable && editableItemId === id) {
-        dispatch(updateItem({ id, name: newName }));
-        setNewName("");
-        setIsEditable(false);
-      } else {
-        setNewName(name)
-        setIsEditable(true)
-        setEditableItemId(id)
-      }
-  }
+      dispatch(updateItem({ id, name: newName }));
+      setNewName("");
+      setIsEditable(false);
+    } else {
+      setNewName(name);
+      setIsEditable(true);
+      setEditableItemId(id);
+    }
+  };
 
   return (
     <div className="container mx-auto p-4">
@@ -37,27 +36,49 @@ function Cart() {
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         {items.map((item) => (
           <div key={item.id} className="bg-white rounded-md shadow-md p-4">
-            {isEditable && editableItemId === item.id ? 
-                (
-                    <input 
-                        type="text" 
-                        value={newName} 
-                        onChange={(e) => setNewName(e.target.value)} 
-                        className="border border-gray-300 px-3 py-2 text-lg font-semibold rounded-md w-full mb-2"
-                    />
-                ) : 
-                (
-                    <h3 className="text-lg font-semibold mb-2">{item.name}</h3>
-                )}
-            <p className="text-gray-600">Quantity: {item.quantity}</p>
+            {isEditable && editableItemId === item.id ? (
+              <input
+                type="text"
+                value={newName}
+                onChange={(e) => setNewName(e.target.value)}
+                className="border border-gray-300 px-3 py-2 text-lg font-semibold rounded-md w-full mb-2"
+              />
+            ) : (
+              <h3 className="text-3xl font-semibold mb-2">{item.name}</h3>
+            )}
+
+            <div className="w-full flex flex-wrap justify-around my-3 text-xl">
+
+              {/* Increase count button */}
+              <button
+                className="cursor-pointer"
+                onClick={() => dispatch(decreaseCount(item.id))}
+              >
+                ➖
+              </button>
+              
+              <p className="text-gray-600">Quantity: {item.quantity}</p>
+
+              {/* Decrease count button */}
+              <button
+                className="cursor-pointer"
+                onClick={() => dispatch(increaseCount(item.id))}
+              >
+                ➕
+              </button>
+            </div>
 
             {/* Update item name button */}
-              <button 
-                className={`text-white px-4 py-2 mr-3 rounded-md ${isEditable && editableItemId === item.id ? 'bg-green-500' : 'bg-blue-500'}`}
-                onClick={() => handleUpdate(item.id, item.name)}
-              >
-                {isEditable && editableItemId === item.id ? 'Save' : 'Update'}
-              </button>
+            <button
+              className={`text-white px-4 py-2 mr-3 rounded-md ${
+                isEditable && editableItemId === item.id
+                  ? "bg-green-500"
+                  : "bg-blue-500"
+              }`}
+              onClick={() => handleUpdate(item.id, item.name)}
+            >
+              {isEditable && editableItemId === item.id ? "Save" : "Update"}
+            </button>
 
             {/* Delete button */}
             <button
@@ -66,7 +87,6 @@ function Cart() {
             >
               Delete
             </button>
-            
           </div>
         ))}
       </div>

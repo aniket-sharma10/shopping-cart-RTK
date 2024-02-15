@@ -30,10 +30,23 @@ export const cartSlice = createSlice({
             state.items = state.items.map(
                 (item) => (item.id === id ? {...item, name: name} : item)
             )
+        },
+        increaseCount: (state, action) => {
+            state.items = state.items.map((item) => 
+                    item.id === action.payload ? {...item, quantity: item.quantity+1} : item
+            ) 
+        },
+        decreaseCount: (state, action) => {
+            state.items = state.items.map((item) =>{
+                if(item.id === action.payload && item.quantity > 1){
+                    return {...item, quantity: item.quantity -1}
+                }
+                return item;
+            }) 
         }
     }
 })
 
-export const {addItem, deleteItem, updateItem} = cartSlice.actions
+export const {addItem, deleteItem, updateItem, increaseCount,decreaseCount} = cartSlice.actions
 
 export default cartSlice.reducer
